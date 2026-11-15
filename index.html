@@ -1,82 +1,903 @@
+PRACTICAL 1
 
-<!DOCTYPE html>
-<html>
-<head>
-<title>DSA Practical Library</title>
-<style>
-body {
-  font-family: Arial;
-  background: #f1f4f9;
-  padding: 20px;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <chrono>
+using namespace std;
+struct Student {
+    int id;
+    string name;
+    float cgpa;
+};
+vector<Student> students;
+// Function Declarations
+void addStudent();
+void displayStudents();
+int linearSearchByID(int id);
+int binarySearchByID(int id);
+void sortByID(); // Required before binary search
+void bubbleSortByName();
+void selectionSortByCGPA(bool ascending);
+void compareSearchPerformance(int searchID);
+// Main Menu
+int main() {
+    int choice, id, index;
+    while (true) {
+        cout << "\n--- Student Database Menu ---\n";
+        cout << "1. Add Student\n";
+        cout << "2. Display Students\n";
+        cout << "3. Linear Search by ID\n";
+        cout << "4. Binary Search by ID\n";
+        cout << "5. Sort by Name (Bubble Sort)\n";
+        cout << "6. Sort by CGPA (Selection Sort Ascending)\n";
+        cout << "7. Sort by CGPA (Selection Sort Descending)\n";
+        cout << "8. Compare Search Performance\n";
+        cout << "9. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        
+        switch (choice) {
+            case 1:
+                addStudent();
+                break;
+            case 2:
+                displayStudents();
+                break;
+            case 3:
+                cout << "Enter ID to search: ";
+                cin >> id;
+                index = linearSearchByID(id);
+                if (index != -1)
+                    cout << "Student Found: " << students[index].name << ", 
+CGPA: " << students[index].cgpa << endl;
+                else
+                    cout << "Student not found.\n";
+                break;
+            case 4:
+                sortByID(); // Required before binary search
+                cout << "Enter ID to search: ";
+                cin >> id;
+                index = binarySearchByID(id);
+                if (index != -1)
+                    cout << "Student Found: " << students[index].name << ", 
+CGPA: " << students[index].cgpa << endl;
+                else
+                    cout << "Student not found.\n";
+                break;
+            case 5:
+                bubbleSortByName();
+                cout << "Sorted by name.\n";
+                break;
+            case 6:
+                selectionSortByCGPA(true);
+                cout << "Sorted by CGPA (Ascending).\n";
+                break;
+            case 7:
+                selectionSortByCGPA(false);
+                cout << "Sorted by CGPA (Descending).\n";
+                break;
+            case 8:
+                cout << "Enter ID to compare performance: ";
+                cin >> id;
+                compareSearchPerformance(id);
+                break;
+            case 9:
+                return 0;
+            default:
+                cout << "Invalid choice!\n";
+        }
+    }
 }
-h1 { color: #174ea6; }
-.card {
-  background: white;
-  padding: 15px;
-  margin: 15px 0;
-  border-radius: 10px;
+// Function Definitions
+void addStudent() {
+    Student s;
+    cout << "Enter Student ID: ";
+    cin >> s.id;
+    cout << "Enter Student Name: ";
+    cin.ignore();
+    getline(cin, s.name);
+    cout << "Enter Student CGPA: ";
+    cin >> s.cgpa;
+    students.push_back(s);
 }
-textarea {
-  width: 100%;
-  height: 180px;
-  font-family: monospace;
+void displayStudents() {
+    cout << "\nID\tName\t\tCGPA\n";
+    for (const auto& s : students) {
+        cout << s.id << "\t" << s.name << "\t\t" << s.cgpa << "\n";
+    }
 }
-button {
-  padding: 10px 18px;
-  background: #174ea6;
-  color: white;
-  border: 0;
-  border-radius: 5px;
-  cursor: pointer;
+int linearSearchByID(int id) {
+    for (int i = 0; i < students.size(); ++i) {
+        if (students[i].id == id)
+            return i;
+    }
+    return -1;
 }
-</style>
-</head>
-<body>
-
-<h1>DSA Practical Code Library</h1>
-<p>C and Python Programs</p>
-
-<div class="card">
-<h2>Python - Binary Search</h2>
-<textarea id="code1" readonly>
-def binary_search(a, x):
-    l, r = 0, len(a)-1
-    while l <= r:
-        m = (l+r)//2
-        if a[m] == x:
-            return m
-        elif a[m] < x:
-            l = m+1
-        else:
-            r = m-1
-    return -1
-
-a = [10, 20, 30, 40, 50]
-print(binary_search(a, 30))
-</textarea>
-<button onclick="copyCode('code1')">Copy Code</button>
-</div>
-
-<div class="card">
-<h2>C - Add your program here</h2>
-<textarea id="code2" readonly>
-Paste your C program here.
-</textarea>
-<button onclick="copyCode('code2')">Copy Code</button>
-</div>
-
-<script>
-function copyCode(id) {
-  let box = document.getElementById(id);
-  box.select();
-  navigator.clipboard.writeText(box.value)
-    .then(() => alert("Code copied!"))
-    .catch(() => {
-      document.execCommand("copy");
-      alert("Code copied!");
+void sortByID() {
+    sort(students.begin(), students.end(), [](const Student& a, const Studen
+t& b) {
+        return a.id < b.id;
     });
 }
-</script>
+int binarySearchByID(int id) {
+    int low = 0, high = students.size() - 1;
+    while (low <= high) {
+        int mid = (low + high) / 2;
+        if (students[mid].id == id)
+            return mid;
+        else if (students[mid].id < id)
+            low = mid + 1;
+        else
+            high = mid - 1;
+    }
+    return -1;
+}
+void bubbleSortByName() {
+    int n = students.size();
+    for (int i = 0; i < n - 1; ++i) {
+        for (int j = 0; j < n - i - 1; ++j) {
+            if (students[j].name > students[j + 1].name) {
+                swap(students[j], students[j + 1]);
+            }
+        }
+    }
+}
+void selectionSortByCGPA(bool ascending) {
+    int n = students.size();
+    for (int i = 0; i < n - 1; ++i) {
+        int selected = i;
+        for (int j = i + 1; j < n; ++j) {
+            if ((ascending &amp;&amp; students[j].cgpa < students[selected].
+cgpa) ||
+                (!ascending &amp;&amp; students[j].cgpa > students[selected]
+.cgpa)) {
+                selected = j;
+            }
+        }
+        swap(students[i], students[selected]);
+    }
+}
+void compareSearchPerformance(int searchID) {
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
+    linearSearchByID(searchID);
+    auto end = high_resolution_clock::now();
+    auto linearTime = duration_cast<nanoseconds>(end - start).count();
+    
+    sortByID();
+    start = high_resolution_clock::now();
+    binarySearchByID(searchID);
+    end = high_resolution_clock::now();
+    auto binaryTime = duration_cast<nanoseconds>(end - start).count();
+    
+    cout << "\nLinear Search Time: " << linearTime << " ns\n";
+    cout << "Binary Search Time: " << binaryTime << " ns\n";
+}
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-</body>
-</html>
+PRACTICAL 2
+
+#include<iostream>
+#include<string.h>
+#include<cctype>
+using namespace std;
+class node
+{
+public:
+char d;
+node *next;
+};
+class stack
+{
+node *top;
+public:
+stack()
+{
+top=NULL;
+}
+void push(char);
+char pop();
+void dis();
+int emp();
+};
+float Operation(char Op,float A,float B)
+{
+int I=0;
+float P=1;
+if(Op=='*')
+P=A*B;
+else if(Op=='/')
+P=A/B;
+else if(Op=='+')
+P=A+B;
+else if(Op=='-')
+P=A-B;
+else
+while(I++<B)
+P=P*A;
+return P;
+}
+int Priority(char Op)
+{
+if(Op=='^')
+return 2;
+if(Op=='+' || Op=='-')
+return 0;
+else
+return 1;
+}
+char stack :: pop()
+{
+if(emp()==1)
+{
+cout<<"\nUnderflow";
+return -1;
+}
+else
+{
+node *p=top;
+top=top->next;
+char x=p->d;
+delete p;
+return x;
+}
+}
+void stack :: push(char d1)
+{
+node *p=new node;
+p->d=d1;
+p->next=top;
+top=p;
+}
+void stack :: dis()
+{
+node *p=top;
+while(p!=NULL)
+{
+cout<<p->d<<"\n";
+p=p->next;
+}
+}
+int stack :: emp()
+{
+if(top==NULL)
+{
+return 1;
+}
+else
+{
+return 0;
+}
+}
+void infix_to_postfix(char String[])
+{
+char PostExpression[25],opr;
+int I=0,J=0,count;
+stack s;
+for(I=0;I<strlen(String);I++)
+{
+if(isalnum(String[I]))
+PostExpression[J++]=String[I];
+else
+{
+if(String[I]==')')
+{
+opr=s.pop();
+while(opr!='(')
+{
+PostExpression[J++]=opr;
+opr=s.pop();
+}
+}
+else
+{
+if(String[I]=='(')
+s.push(String[I]);
+else
+{
+while(!s.emp())
+{
+opr=s.pop();
+if(opr!='(' &&
+Priority(opr)>=Priority(String[I]))
+{
+PostExpression[J++]=opr;
+}
+else
+{
+s.push(opr);
+break;
+}
+}
+s.push(String[I]);
+}
+}
+}
+}
+while(!s.emp())
+{
+PostExpression[J++]=s.pop();
+}
+PostExpression[J]='\0';
+cout<<"\nPost: "<<PostExpression;
+}
+void InfixToPrefix(char String[20])
+{
+char PreExpression[20],opr;
+int I=0,J=0;
+stack s;
+for(I=strlen(String)-1;I>=0;I--)
+{
+if(isalnum(String[I]))
+PreExpression[J++]=String[I];
+else
+{
+if(String[I]=='(')
+{
+opr=s.pop();
+while(opr!=')')
+{
+PreExpression[J++]=opr;
+opr=s.pop();
+}
+}
+else
+{
+if(String[I]==')')
+s.push(String[I]);
+else
+{
+while(!s.emp())
+{
+opr=s.pop();
+if(opr!=')' &&
+Priority(opr)>=Priority(String[I]))
+{
+PreExpression[J++]=opr;
+}
+else
+{
+s.push(opr);
+break;
+}
+}
+s.push(String[I]);
+}
+}
+}
+}
+while(!s.emp())
+PreExpression[J++]=s.pop();
+PreExpression[J]='\0';
+cout<<" prefix is ";
+for(I=J-1;I>=0;I--)
+cout<<PreExpression[I];
+}
+int main()
+{
+stack s;
+int d1,i,ch1;
+char ch;
+char Infix_expression[100];
+char expression[100];
+do
+{
+cout<<"\n1:Infix to postfix";
+cout<<"\n2:Infix to Prefix";
+cout<<"\n3:Exit";
+cout<<"\nEnter your choice \t";
+cin>>ch1;
+switch(ch1)
+{
+case 1:
+cout<<"\n\n Enter the Infix Expression : ";
+cin>>Infix_expression;
+infix_to_postfix(Infix_expression);
+break;
+case 2:
+cout<<"\n\n Enter the Infix Expression : ";
+cin>>Infix_expression;
+InfixToPrefix(Infix_expression);
+break;
+case 3:
+break;
+default:
+cout<<"\nInvalid choice";
+}
+}while(ch1!=3);
+return(0);
+}
+------------------------------------------------------------------------------------------------------------------------------------------
+
+PRACTICAL 3
+
+#include <iostream>
+using namespace std;
+# define SIZE 5
+int A[SIZE];
+int front = -1;
+int rear = -1;
+//declare fun to check if queue is empty or full
+bool isempty()
+{
+if(front == -1 && rear == -1)
+return true;
+else
+return false;
+}
+//declare fun to enter elements in queue
+void enqueue(int value)
+{
+//queue is full
+if((rear + 1)%SIZE == front) // queue is full
+cout<<"Queue is full\n";
+else
+{
+//first element inserted
+if( front == -1)
+front =0;
+// insert element at rear
+rear = (rear+1)%SIZE; //rear++
+A[rear] =value;
+}
+}
+//function to delete elements from queue
+void dequeue()
+{
+if( isempty())
+cout<<"Queue is empty\n";
+else
+//only one element
+if(front == rear)
+front = rear = -1;
+else
+front = (front+1)%SIZE; //front++
+ }
+ //function to show the element at front
+ void showfront()
+ {
+ if(isempty())
+ cout<<"Queue is empty\n";
+ else
+ cout<<"Element at front is:"<<A[front];
+ }
+ //function to display elements
+void displayQueue()
+{
+ if(isempty())
+ cout<<"Queue is empty\n";
+ else
+ {
+ int i;
+ if(front <= rear)
+ {
+ for(i=front; i<=rear; i++)
+ cout<<A[i]<<" ";
+ }
+ else
+ {
+ i = front;
+ while(i<SIZE)
+ {
+ cout<<A[i]<<" ";
+ i++;
+ }
+ i=0;
+ while(i<=rear)
+ {
+ cout<<A[i]<<" ";
+ i++;
+ }
+ }
+ }
+}
+ //main function
+ int main()
+{
+int choice,flag=1,value;
+while(flag == 1)
+{
+cout<<"\n1.Enqueue 2.Dequeue 3.Show Front 4.Display Queue 5.Exit\n";
+cout<<"Enter your choices:";
+cin>>choice;
+switch(choice)
+{
+case 1:cout<<"Enter Value:\n";
+cin>>value;
+enqueue(value);
+break;
+case 2:dequeue();
+break;
+case 3:showfront();
+break;
+case 4:displayQueue();
+break;
+case 5:flag=0;
+break;
+}
+}
+return 0;
+}
+-------------------------------------------------------------------------------------------------------------------------------
+
+PRACTICAL 4
+
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+class BST:
+    def __init__(self):
+        self.root = None
+    def insert(self, root, key):
+        if root is None:
+            return Node(key)
+        if key < root.key:
+            root.left = self.insert(root.left, key)
+        elif key > root.key:
+            root.right = self.insert(root.right, key)
+        else:
+            print("Duplicate entry ignored!")
+        return root
+    def search(self, root, key):
+        if root is None or root.key == key:
+            return root
+        if key < root.key:
+            return self.search(root.left, key)
+        return self.search(root.right, key)
+    def delete(self, root, key):
+        if root is None:
+            return root
+        if key < root.key:
+            root.left = self.delete(root.left, key)
+        elif key > root.key:
+            root.right = self.delete(root.right, key)
+        else:
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+            temp = self.min_value_node(root.right)
+            root.key = temp.key
+            root.right = self.delete(root.right, temp.key)
+        return root
+    def min_value_node(self, node):
+        while node.left:
+            node = node.left
+        return node
+    # Traversals
+    def inorder(self, root):
+        if root:
+            self.inorder(root.left)
+            print(root.key, end=" ")
+            self.inorder(root.right)
+    def preorder(self, root):
+        if root:
+            print(root.key, end=" ")
+            self.preorder(root.left)
+            self.preorder(root.right)
+    def postorder(self, root):
+        if root:
+            self.postorder(root.left)
+            self.postorder(root.right)
+            print(root.key, end=" ")
+    def level_order(self, root):
+        if root is None:
+            return
+        queue = [root]
+        while queue:
+            current = queue.pop(0)
+            print(current.key, end=" ")
+            if current.left:
+                queue.append(current.left)
+            if current.right:
+                queue.append(current.right)
+    def depth(self, root):
+        if root is None:
+            return 0
+        return 1 + max(self.depth(root.left), self.depth(root.right))
+    def mirror(self, root):
+        if root:
+            root.left, root.right = root.right, root.left
+            self.mirror(root.left)
+            self.mirror(root.right)
+    def copy_tree(self, root):
+        if root is None:
+            return None
+        new_node = Node(root.key)
+        new_node.left = self.copy_tree(root.left)
+        new_node.right = self.copy_tree(root.right)
+        return new_node
+    def parent_child(self, root):
+        if root:
+            if root.left:
+                print(f"Parent {root.key} -> Left Child {root.left.key}")
+            if root.right:
+                print(f"Parent {root.key} -> Right Child {root.right.key}")
+            self.parent_child(root.left)
+            self.parent_child(root.right)
+    def leaf_nodes(self, root):
+        if root:
+            if root.left is None and root.right is None:
+                print(root.key, end=" ")
+            self.leaf_nodes(root.left)
+            self.leaf_nodes(root.right)
+# -------- MENU DRIVEN PROGRAM -------
+bst = BST()
+# (Rest of the execution flow as demonstrated in the output)
+
+-----------------------------------------------------------------------------------------------------------
+
+PRACTICAL 5
+
+def kruskal(n, edges, names):
+    # Sort edges by weight (without lambda)
+    for i in range(len(edges)):
+        for j in range(i+1, len(edges)):
+            if edges[i][2] > edges[j][2]:
+                edges[i], edges[j] = edges[j], edges[i]
+    parent = list(range(n)) # parent array
+    def find(i):
+        while parent[i] != i:
+            i = parent[i]
+        return i
+    mst = []
+    total_cost = 0
+    for u, v, w in edges:
+        pu, pv = find(u), find(v)
+        if pu != pv: # if no cycle
+            mst.append((u, v, w))
+            total_cost += w
+            parent[pu] = pv # union
+    print("\nMST using Kruskal’s Algorithm:")
+    for u, v, w in mst:
+        print(f"{names[u]} -- {names[v]} == {w}")
+    print("Total Cost of MST =", total_cost)
+# ---------- Prim's Algorithm ---------
+def prim(n, adj, names):
+    selected = [False]*n
+    selected[0] = True # start from node 0
+    mst = []
+    total_cost = 0
+    for _ in range(n-1):
+        u = v = -1
+        min_w = 999999
+        for i in range(n):
+            if selected[i]:
+                for j in range(n):
+                    if not selected[j] and adj[i][j] > 0:
+                        if adj[i][j] < min_w:
+                            u, v, min_w = i, j, adj[i][j]
+        mst.append((u, v, min_w))
+        total_cost += min_w
+        selected[v] = True
+    print("\nMST using Prim’s Algorithm:")
+    for u, v, w in mst:
+        print(f"{names[u]} -- {names[v]} == {w}")
+    print("Total Cost of MST =", total_cost)
+# ---------- MAIN PROGRAM ---------
+n = int(input("Enter number of departments: "))
+names = []
+print("\n-----------: Enter department names :-----------")
+for i in range(n):
+    names.append(input(f"Department {i+1} Name: "))
+edges = []
+m = int(input("\nEnter number of paths (edges): "))
+print("\n-----------: Enter edges :----------")
+for _ in range(m):
+    dept1 = input("\nDept1_Name= ")
+    dept2 = input("Dept2_Name= ")
+    w = int(input("Distance= "))
+u = names.index(dept1)
+v = names.index(dept2)
+edges.append((u, v, w))
+# adjacency matrix
+adj = [[0]*n for _ in range(n)]
+for u, v, w in edges:
+adj[u][v] = adj[v][u] = w
+# Run algorithms
+kruskal(n, edges, names)
+prim(n, adj, names)
+
+---------------------------------------------------------------------------------------------------------------------------
+
+PRACTICAL 6
+def heapify(heap, n, i):
+    maximum = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    # if left child exists
+    if l < n and heap[i] < heap[l]:
+        maximum = l
+    # if right child exists
+    if r < n and heap[maximum] < heap[r]:
+        maximum = r
+    # root
+    if maximum != i:
+        heap[i], heap[maximum] = heap[maximum], heap[i]
+        heapify(heap, n, maximum)
+def heapSort(heap):
+    n = len(heap)
+    # max heap
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(heap, n, i)
+    # element extraction
+    for i in range(n - 1, 0, -1):
+        heap[i], heap[0] = heap[0], heap[i]
+        heapify(heap, i, 0)
+# main
+heap = [15, 1, 11, 5, 6, 7, 24, 9, 8, 2]
+heapSort(heap)
+print("Heap array:")
+print(heap)
+print("The Sorted array is:")
+print(heap)
+--------------------------------------------------------------------------------------------------------------------------------
+
+PRACTICAL 7
+
+def merge_sort(orders):
+    # Base condition
+    if len(orders) <= 1:
+        return orders
+    # Find the middle position
+    mid = len(orders) // 2
+    # Divide the list into two halves
+    left_half = orders[:mid]
+    right_half = orders[mid:]
+    # Recursively sort both halves
+    left_sorted = merge_sort(left_half)
+    right_sorted = merge_sort(right_half)
+    # Merge the sorted halves
+    return merge(left_sorted, right_sorted)
+def merge(left, right):
+    result = []
+    i = 0
+    j = 0
+    # Compare elements from both lists
+    while i < len(left) and j < len(right):
+        if left[i]["delivery_time"] <= right[j]["delivery_time"]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    # Add remaining elements from left list
+    while i < len(left):
+        result.append(left[i])
+        i += 1
+    # Add remaining elements from right list
+    while j < len(right):
+        result.append(right[j])
+        j += 1
+    return result
+# List of online orders
+orders = [
+{"order_id": "O101", "delivery_time": 45},
+{"order_id": "O102", "delivery_time": 20},
+{"order_id": "O103", "delivery_time": 35},
+{"order_id": "O104", "delivery_time": 15},
+{"order_id": "O105", "delivery_time": 30}
+]
+# Display original orders
+print("Orders before sorting:")
+for order in orders:
+print(order["order_id"], "-", order["delivery_time"], "minutes")
+# Sort orders using Merge Sort
+sorted_orders = merge_sort(orders)
+# Display sorted orders
+print("\nOrders after sorting by delivery time:")
+for order in sorted_orders:
+print(order["order_id"], "-", order["delivery_time"], "minutes")
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+PRACTICAL 8
+profits = [45, 60, 80] 
+capacity = 40 
+# Calculate profit/weight ratio 
+ratio = [p/w for p, w in zip(profits, weights)] 
+# Combine items into tuples 
+items = list(zip(weights, profits, ratio)) 
+# Define a function to return the ratio (third element) 
+def get_ratio(item): 
+    return item[2] 
+# Sort items by ratio descending using the function 
+items.sort(key=get_ratio, reverse=True) 
+total_profit = 0 
+print("Parcel\tWeight\tProfit\tFraction Taken") 
+for i, (w, p, r) in enumerate(items): 
+    if capacity >= w: 
+        fraction = 1 
+        capacity -= w 
+        total_profit += p 
+    else: 
+        fraction = capacity / w 
+        total_profit += p * fraction 
+        capacity = 0 
+    print(f"{i+1}\t{w}\t{p}\t{fraction:.2f}") 
+    if capacity == 0: 
+        break
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+practical 9
+
+def naive_string_match(text, pattern):
+    n = len(text)
+    m = len(pattern)
+    indices = [] # to store all matching positions
+    # Loop over all possible starting positions in text
+    for i in range(n - m + 1):
+        match = True
+        # Compare each character of pattern with substring in text
+        for j in range(m):
+            if text[i + j] != pattern[j]:
+                match = False
+                break
+        # If no mismatch was found, record the index
+        if match:
+            indices.append(i)
+    return indices # return all positions where pattern occurs
+# Example usage of the function
+if __name__ == "__main__":
+    text = "ababcabcabababd"
+    pattern = "abab"
+    result = naive_string_match(text, pattern)
+    print("Pattern found at indices:", result)
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+practical 10
+
+from collections import deque
+# Maze
+# 0 = free path, 1 = wall
+maze = [
+    [1, 0, 1, 0, 0],
+    [1, 0, 0, 0, 0],
+    [0, 0, 0, 1, 0],
+    [1, 0, 0, 0, 1],
+    [0, 0, 1, 0, 0]
+]
+start = (0, 0) # Start point (row, col)
+goal = (0, 4) # Goal point (row, col)
+# 4 directions: up, down, left, right
+directions = [(-1,0), (1,0), (0,-1), (0,1)]
+def bfs(start, goal):
+    queue = deque([start])
+    visited = set([start])
+    parent = {start: None}
+    while queue:
+        r, c = queue.popleft()
+        # Stop if we reach the goal
+        if (r, c) == goal:
+            break
+        for dr, dc in directions:
+            nr, nc = r + dr, c + dc
+            if 0 <= nr < len(maze) and 0 <= nc < len(maze[0]):
+                if maze[nr][nc] == 0 and (nr, nc) not in visited:
+                    queue.append((nr, nc))
+                    visited.add((nr, nc))
+                    parent[(nr, nc)] = (r, c)
+    # Build the path
+    path = []
+    node = goal
+    while node is not None:
+        path.append(node)
+        node = parent.get(node)
+    path.reverse()
+    
+    # If path exists, return it
+    if path[0] == start:
+        return path
+    else:
+        return None
+# Run BFS
+path = bfs(start, goal)
+# Print Result
+if path:
+print("Path found:", path)
+else:
+print("Path Not found")
